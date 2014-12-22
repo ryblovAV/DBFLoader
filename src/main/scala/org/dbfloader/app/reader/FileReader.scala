@@ -26,6 +26,7 @@ object FileReader {
     val listNames: List[SourceFile] = {
       folder.listFiles
         .map(_.getName)
+        .sorted
         .map((fileName: String) => {val entityName = getEntityName(fileName)
                                    SourceFile(entityName, fileName, getTableName(fileName,entityName))})
         .toList
