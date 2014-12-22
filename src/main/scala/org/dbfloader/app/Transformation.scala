@@ -3,11 +3,8 @@ package org.dbfloader.app
 import java.text.SimpleDateFormat
 import java.util
 
-import grizzled.slf4j.Logger
 
 object Transformation {
-
-  val logger = Logger("org.dbfloader.app.Transformation")
 
   val formatter = new SimpleDateFormat("dd.MM.yyyy");
 
@@ -15,6 +12,11 @@ object Transformation {
   private def transformValues(records:List[Array[Object]]):List[Array[Object]] = {
 
     def objectToStr(value:Object):String = {
+
+      def delToZero(str: String) = if (str.length > 2) {
+        if (str.substring(str.length - 2) == ".0") str.substring(0, str.length - 2) else str
+      }
+      else str
 
       def dateToStr(dt:java.util.Date):String = {
         formatter.format(dt)
@@ -24,7 +26,7 @@ object Transformation {
         case "  .  .      " => ""
         case null => ""
         case dt: util.Date => dateToStr(dt)
-        case _ => value.toString
+        case _ => delToZero(value.toString.trim)
       }
     }
 

@@ -3,16 +3,14 @@ package org.dbfloader.app
 import java.io.FileInputStream
 
 import com.linuxense.javadbf.DBFReader
-import grizzled.slf4j.Logger
+import grizzled.slf4j.Logging
 import org.dbfloader.app.db.{SQLBulder, JDBCUtl}
 import org.dbfloader.app.reader.{SourceFile, DataReader, MetaDataReader}
 import org.springframework.context.support.ClassPathXmlApplicationContext
 
 import scala.annotation.tailrec
 
-object LoadUtl {
-
-  val logger = Logger("org.dbfloader.app.LoadUtl")
+object LoadUtl extends Logging {
 
   val path: String = "//Users//a123//data"
 
@@ -22,7 +20,7 @@ object LoadUtl {
 
   def loadOneSourceFile(sourceFile: SourceFile, countRecord:Int):Int = {
 
-    logger.info(s" load file:${sourceFile}")
+    info(s" load file:${sourceFile}")
 
     val inputStream = new FileInputStream(s"$path//${sourceFile.fileName}")
 
@@ -56,7 +54,7 @@ object LoadUtl {
 
   def loadAll(mapFiles:Map[String,List[SourceFile]]) = {
 
-    logger.info("start load")
+    info("start load")
 
     mapFiles.foreach((t) => loadOneEntity(t._1,t._2))
   }

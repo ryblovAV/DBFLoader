@@ -2,7 +2,7 @@ package org.dbfloader.app.reader
 
 case class SourceFile(entityName:String, fileName:String, tableName:String)
 
-object FileUtl {
+object FileReader {
 
   def getTableName(fileName:String, entityName:String) = {
 

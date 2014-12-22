@@ -1,12 +1,18 @@
 package org.dbfloader.app
 
-import org.dbfloader.app.reader.FileUtl
+import grizzled.slf4j.Logging
+import org.dbfloader.app.reader.FileReader
 
-object MainApp extends App {
+object MainApp extends App with Logging {
 
-  val files = FileUtl.groupFilesByEntity(LoadUtl.path)
+
+
+  val files = FileReader.groupFilesByEntity(LoadUtl.path)
   LoadUtl.loadAll(files)
 
-  println("OK")
+
+
+  logger.info("finish")
+
 
 }
