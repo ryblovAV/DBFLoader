@@ -2,6 +2,7 @@ package org.dbfloader.app.db
 
 import java.util
 
+import org.dbfloader.app.LoadUtl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
@@ -26,11 +27,13 @@ class JDBCUtl {
   }
 
   def delete(tableName:String) = {
-    jdbcTemplate.update(s"delete $tableName")
+    if (LoadUtl.writeToDb)
+      jdbcTemplate.update(s"delete $tableName")
   }
 
   def butchInsert(records:util.List[Array[Object]],sqlInsert:String) = {
-    jdbcTemplate.batchUpdate(sqlInsert,records)
+    if (LoadUtl.writeToDb)
+      jdbcTemplate.batchUpdate(sqlInsert,records)
   }
 
 }

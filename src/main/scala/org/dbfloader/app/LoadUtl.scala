@@ -12,6 +12,8 @@ import scala.annotation.tailrec
 
 object LoadUtl extends Logging {
 
+  val writeToDb = false
+
   val path: String = "//Users//a123//data"
 
   val ctx = new ClassPathXmlApplicationContext("application-context.xml")
