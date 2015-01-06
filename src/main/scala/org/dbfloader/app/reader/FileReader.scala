@@ -30,9 +30,9 @@ object FileReader {
         .map((fileName: String) => {val entityName = getEntityName(fileName)
                                    SourceFile(entityName, fileName, getTableName(fileName,entityName))})
         .toList
-        //.filter(_.entityName == "targr")
-        .filter((s) => (s.entityName != "poch"))
-        //.filter((s) => (s.entityName != "rmmsn") && (s.entityName != "poch"))
+//        .filter(_.entityName == "tu_sl")
+//        .filter((s) => (s.entityName != "poch"))
+//        .filter((s) => (s.entityName != "rmmsn") && (s.entityName != "poch"))
     }
 
     listNames.groupBy(_.entityName)

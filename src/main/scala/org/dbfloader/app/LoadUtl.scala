@@ -12,7 +12,7 @@ import scala.annotation.tailrec
 
 object LoadUtl extends Logging {
 
-  val writeToDb = false
+  val writeToDb = true
 
   val path: String = "//Users//a123//data"
 
@@ -31,7 +31,10 @@ object LoadUtl extends Logging {
 
     val fields = MetaDataReader.getFields(reader)
 
-    jdbcUtl.delete(sourceFile.tableName)
+    if (!jdbcUtl.existsTable(sourceFile.tableName)) {
+      jdbcUtl.createTable(sourceFile.tableName,fields)
+    }
+
 
     val records = DataReader.getRecords(reader)
     val lRecords = Transformation.transform(records)
@@ -40,7 +43,7 @@ object LoadUtl extends Logging {
     if (existsId)
       Transformation.addIdToList(lRecords,countRecord)
 
-    jdbcUtl.butchInsert(lRecords,SQLBulder.generateSql(sourceFile.tableName, fields, existsId))
+    jdbcUtl.loadToDB(lRecords,SQLBulder.generateSqlInsert(sourceFile.tableName, fields, existsId),sourceFile.tableName)
 
     inputStream.close()
 
@@ -56,7 +59,8 @@ object LoadUtl extends Logging {
 
   def loadAll(mapFiles:Map[String,List[SourceFile]]) = {
 
-    info("start load")
+    info("start load ")
+    info(s"files $mapFiles")
 
     mapFiles.foreach((t) => loadOneEntity(t._1,t._2))
   }
