@@ -40,7 +40,7 @@ class JDBCUtl extends Logging{
 //  }
 
   def existsTable(tableName:String) = {
-    jdbcTemplate.queryForList(SQLBulder.generateSqlCheckExistsTable(tableName)) == 0
+    jdbcTemplate.queryForList(SQLBulder.generateSqlCheckExistsTable,tableName).size != 0
   }
 
   def createTable(tableName:String,fields:List[Field]) = {

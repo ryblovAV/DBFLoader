@@ -22,8 +22,8 @@ object SQLBulder {
      """.stripMargin
   }
   
-  def generateSqlCheckExistsTable(tableName:String) =
-    s"select t.table_name from user_tables t where t.table_name = '$tableName'"
+  def generateSqlCheckExistsTable =
+    s"select t.table_name from user_tables t where t.table_name = upper(?)"
   
   def generateSqlCreateTable(tableName:String, fields:List[Field]) = {
     s"""
