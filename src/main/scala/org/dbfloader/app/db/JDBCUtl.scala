@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.{TransactionStatus, TransactionDefinition}
 import org.springframework.transaction.support.DefaultTransactionDefinition
 
+import scala.util.Try
+
 @Repository("outReader")
 class JDBCUtl extends Logging{
 
@@ -82,6 +84,10 @@ class JDBCUtl extends Logging{
         throw e
       }
     }
+  }
+
+  def test(str:String) = {
+    for { v <- Try{str.toInt}} yield v
   }
 
 }

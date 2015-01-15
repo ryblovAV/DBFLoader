@@ -12,7 +12,7 @@ import scala.annotation.tailrec
 
 object LoadUtl extends Logging {
 
-  val writeToDb = true
+  val writeToDb = false
 
   val path: String = "//Users//a123//data"
 
@@ -35,7 +35,6 @@ object LoadUtl extends Logging {
       jdbcUtl.createTable(sourceFile.tableName,fields)
     }
 
-
     val records = DataReader.getRecords(reader)
     val lRecords = Transformation.transform(records)
 
@@ -49,6 +48,7 @@ object LoadUtl extends Logging {
 
     records.length
   }
+
   @tailrec
   def loadOneEntity(entityName: String, sourceFiles: List[SourceFile], prevCountRecord:Int = 0):Unit = {
     sourceFiles match {
