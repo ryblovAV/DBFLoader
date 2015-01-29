@@ -16,6 +16,7 @@ object FileReader {
     val listNames: List[SourceFile] = {
       folder.listFiles
         .map(_.getName)
+        .filter(_.toUpperCase.contains(".DBF"))
         .sorted
         .map((fileName: String) => {val entityName = getEntityName(fileName)
                                    SourceFile(entityName, fileName, getOneTableName(fileName,entityName),fileName.substring(0,2))})
