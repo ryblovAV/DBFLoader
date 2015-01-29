@@ -5,7 +5,7 @@ import org.dbfloader.app.reader.FileReader
 
 object MainApp extends App with Logging {
 
-  val files = FileReader.groupFilesByEntity(LoadUtl.path).filter((a)=>a._1 == "opla")
+  val files = FileReader.groupFilesByEntity(LoadUtl.path)//.filter((a)=>a._1 == "opla")
   LoadUtl.loadAll(files)
 
 

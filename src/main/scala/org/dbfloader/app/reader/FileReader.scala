@@ -4,21 +4,6 @@ case class SourceFile(entityName:String, fileName:String, tableName:String, code
 
 object FileReader {
 
-  def getTableName(fileName:String, entityName:String) = {
-
-    def getCodeBase(fileName:String) = fileName.substring(0,2).toInt
-
-    def getAreaName(codeBase: Int) = codeBase match {
-      case 2 => "urdob"
-      case 18 => "urdol"
-      case _ => throw new Exception(s"Unknown codeBase ${codeBase}")
-    }
-
-    s"LESK_${getAreaName(getCodeBase(fileName))}_${entityName}".toUpperCase
-  }
-
-
-
   def groupFilesByEntity(path:String) = {
 
     def getOneTableName(fileName:String, entityName:String) =

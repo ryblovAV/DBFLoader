@@ -93,7 +93,7 @@ object SQLBulder extends Logging{
     }
 
     def generate(tables: List[String]) = {
-      tables.foldRight("")((tableName, sql) =>
+      tables.foldRight("select 0 as id from dual")((tableName, sql) =>
         s""" |$sql ${if (sql != "") addUnion else ""}
          |select id
          |  from ${tableName}""".stripMargin)
