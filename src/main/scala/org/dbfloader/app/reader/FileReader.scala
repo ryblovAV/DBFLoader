@@ -1,15 +1,15 @@
 package org.dbfloader.app.reader
 
-case class SourceFile(entityName:String, fileName:String, tableName:String, codeBase:String)
+import org.dbfloader.app.LoadUtl
+
+case class SourceFile(entityName:String, fileName:String, tableName:String, codeBase: String)
 
 object FileReader {
 
-  def groupFilesByEntity(path:String) = {
+  def groupFilesByEntity(path:String, prefix:String, getEntityName: String => String, getCodeBase: String => String) = {
 
-    def getOneTableName(fileName:String, entityName:String) =
-      s"LESK_JUR_$entityName".toUpperCase
-
-    def getEntityName(fileName:String) = fileName.replace(".DBF","").substring(3)
+    def getOneTableName(entityName:String) =
+      s"${prefix}$entityName".toUpperCase
 
     val folder = new java.io.File(path)
 
@@ -19,7 +19,7 @@ object FileReader {
         .filter(_.toUpperCase.contains(".DBF"))
         .sorted
         .map((fileName: String) => {val entityName = getEntityName(fileName)
-                                   SourceFile(entityName, fileName, getOneTableName(fileName,entityName),fileName.substring(0,2))})
+                                   SourceFile(entityName, fileName, getOneTableName(entityName),getCodeBase(fileName))})
         .toList
     }
 

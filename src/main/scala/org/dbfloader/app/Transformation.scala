@@ -3,10 +3,12 @@ package org.dbfloader.app
 import java.text.SimpleDateFormat
 import java.util
 
+import grizzled.slf4j.{Logging, Logger}
 
-object Transformation {
 
-  val formatter = new SimpleDateFormat("dd.MM.yyyy");
+object Transformation extends Logging {
+
+  val formatter = new SimpleDateFormat("dd.MM.yyyy")
 
   //transform number, date to String
   private def transformValues(records:List[Array[Object]]):List[Array[Object]] = {
@@ -28,16 +30,27 @@ object Transformation {
         case dt: util.Date => dateToStr(dt)
         case _ => delToZero(value.toString.trim)
       }
+
+      value match {
+        case "  .  .      " => ""
+        case null => ""
+        case dt: util.Date => dateToStr(dt)
+        case _ => delToZero(value.toString.trim)
+      }
+
+
     }
 
     def arrayObjectToArrayString(a:Array[Object]):Array[Object] =
       a.map(objectToStr(_))
 
+    info(s"start transform values ${records.length}")
     records.map(arrayObjectToArrayString)
   }
 
   //scala.List to java.util.Arraylist for JDBCTemplates
   private def transformToListRecords(records:List[Array[Object]]):util.ArrayList[Array[Object]] = {
+    info(s"start transform list to array ${records.length}")
     records.foldLeft(new util.ArrayList[Array[Object]])((l,a) => {l.add(a); l})
   }
 

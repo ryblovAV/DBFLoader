@@ -26,10 +26,18 @@ object SQLBulder extends Logging{
     s"select t.table_name from user_tables t where t.table_name = upper(?)"
   
   def generateSqlCreateTable(tableName:String, fields:List[Field]) = {
+
+    //fields.foreach((f) => info(f.name + " ~ " + f.typeField))
+
+    def getType(fieldType: String) = fieldType match {
+      case "78" => "NUMBER(30,0)"
+      case _    => "varchar2(500)"
+    }
+
     s"""
        |create table $tableName
        |(
-       |${createFieldBlock(fields,f => s"${f.name} varchar2(500)",",\n")}
+       |${createFieldBlock(fields,f => s"${f.name} ${getType(f.typeField)}",",\n")}
        |)
      """.stripMargin
   }

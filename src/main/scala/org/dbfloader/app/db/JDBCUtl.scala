@@ -1,13 +1,15 @@
 package org.dbfloader.app.db
 
-import java.sql.ResultSet
+import java.sql.{PreparedStatement, ResultSet}
 import java.util
+
+import scala.collection.JavaConversions._
 
 import grizzled.slf4j.Logging
 import org.dbfloader.app.LoadUtl
 import org.dbfloader.app.reader.{DBIndex, Field}
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.{RowMapper, JdbcTemplate}
+import org.springframework.jdbc.core.{ParameterizedPreparedStatementSetter, RowMapper, JdbcTemplate}
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.{TransactionStatus, TransactionDefinition}
@@ -98,16 +100,18 @@ class JDBCUtl extends Logging{
     jdbcTemplate.queryForObject(sql,classOf[java.lang.Integer])
   }
 
-  def loadToDB(records:util.List[Array[Object]],sqlInsert:String,tableName:String,codeBase:String) = {
+  def loadToDB(records:util.List[Array[Object]],sqlInsert:String,tableName:String,codeBase:String, first: Boolean): Boolean = {
 
-    info(s"start load $tableName codeBase: $codeBase")
+    info(s"JDBC start load $tableName codeBase: $codeBase size = ${records.size}")
 
     val transactionDefinition = new DefaultTransactionDefinition
     val transactionStatus = transactionManager.getTransaction(transactionDefinition)
 
     try {
       if (LoadUtl.writeToDb) {
-        jdbcTemplate.update(s"delete $tableName where code_base = :CODE_BASE",codeBase)
+        if (first)
+          jdbcTemplate.update(s"delete $tableName where code_base = :CODE_BASE",codeBase)
+
         jdbcTemplate.batchUpdate(sqlInsert, records)
         transactionManager.commit(transactionStatus)
         info(s"table $tableName   ...........OK")
@@ -119,6 +123,7 @@ class JDBCUtl extends Logging{
         //throw e
       }
     }
+    return false
   }
 
   def copyData(tableSource:String,tableTarget:String,fields:List[Field], codeBase:String) = {
