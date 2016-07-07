@@ -48,6 +48,16 @@ class JDBCUtl extends Logging{
     jdbcTemplate.queryForList(SQLBulder.generateSqlCheckExistsTable,tableName).size != 0
   }
 
+  def truncateTable(tableName: String) = {
+    val sql = SQLBulder.generateTruncateSQL(tableName)
+    info(sql)
+    try {
+      jdbcTemplate.execute(sql)
+    } catch {
+      case e:Exception => logger.error(e.getMessage)
+    }
+  }
+
   def createTable(tableName:String,fields:List[Field], sqlBuilder: (String,List[Field]) => String) = {
 
     val sqlCreateTable = sqlBuilder(tableName, fields).trim
@@ -60,7 +70,9 @@ class JDBCUtl extends Logging{
 
     jdbcTemplate.execute(sqlCreateTable)
 
-    jdbcTemplate.execute(s"create index I_CB_$tableName on $tableName (CODE_BASE)");
+
+    if (fields.map(_.name).contains("CODE_BASE"))
+      jdbcTemplate.execute(s"create index I_CB_$tableName on $tableName (CODE_BASE)");
 
   }
 
@@ -109,8 +121,8 @@ class JDBCUtl extends Logging{
 
     try {
       if (LoadUtl.writeToDb) {
-        if (first)
-          jdbcTemplate.update(s"delete $tableName where code_base = :CODE_BASE",codeBase)
+//        if (first)
+//          jdbcTemplate.update(s"delete $tableName where code_base = :CODE_BASE",codeBase)
 
         jdbcTemplate.batchUpdate(sqlInsert, records)
         transactionManager.commit(transactionStatus)
