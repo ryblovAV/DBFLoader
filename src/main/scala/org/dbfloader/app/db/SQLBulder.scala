@@ -21,6 +21,16 @@ object SQLBulder extends Logging{
        |(${createFieldBlock(fields,(f:Field) => s":${f.name}")}$keyValues,:CODE_BASE)
      """.stripMargin
   }
+
+  def generateSqlInsert(tableName:String, fields:List[Field]) = {
+
+    s"""
+       |insert into $tableName
+       |(${createFieldBlock(fields,field => field.name)})
+       |values
+       |(${createFieldBlock(fields,(f:Field) => s":${f.name}")})
+     """.stripMargin
+  }
   
   def generateSqlCheckExistsTable =
     s"select t.table_name from user_tables t where t.table_name = upper(?)"
@@ -30,7 +40,7 @@ object SQLBulder extends Logging{
     //fields.foreach((f) => info(f.name + " ~ " + f.typeField))
 
     def getType(fieldType: String) = fieldType match {
-      case "78" => "NUMBER(30,0)"
+      case "78" => "NUMBER(30,10)"
       case _    => "varchar2(500)"
     }
 
@@ -92,6 +102,7 @@ object SQLBulder extends Logging{
     s"create ${index.uniqueness} index ${transformName(index.name)}_ on ${tableName} ($columnsStr)"
   }
 
+  def generateTruncateSQL(table:String) = s"truncate table $table"
 
   def generateSelectMax(tables: List[String]) = {
 
@@ -99,6 +110,7 @@ object SQLBulder extends Logging{
       s"""
          | union all""".stripMargin
     }
+
 
     def generate(tables: List[String]) = {
       tables.foldRight("select 0 as id from dual")((tableName, sql) =>

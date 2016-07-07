@@ -15,6 +15,8 @@ object Transformation extends Logging {
 
     def objectToStr(value:Object):String = {
 
+      def rtrim(s: String) = s.replaceAll("\\s+$", "")
+
       def delToZero(str: String) = if (str.length > 2) {
         if (str.substring(str.length - 2) == ".0") str.substring(0, str.length - 2) else str
       }
@@ -28,16 +30,8 @@ object Transformation extends Logging {
         case "  .  .      " => ""
         case null => ""
         case dt: util.Date => dateToStr(dt)
-        case _ => delToZero(value.toString.trim)
+        case _ => delToZero(rtrim(value.toString))
       }
-
-      value match {
-        case "  .  .      " => ""
-        case null => ""
-        case dt: util.Date => dateToStr(dt)
-        case _ => delToZero(value.toString.trim)
-      }
-
 
     }
 

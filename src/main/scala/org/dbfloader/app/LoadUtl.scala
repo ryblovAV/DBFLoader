@@ -13,6 +13,8 @@ object LoadUtl extends Logging {
   val writeToDb = true
 
   val path = "//Users//a123//data"
+  val pathGesk = "//Users//a123//data//dataGesk"
+  val pathVerification = "//Users//a123//data_lesk"
 
 
   val ctx = new ClassPathXmlApplicationContext("application-context.xml")
@@ -44,7 +46,7 @@ object LoadUtl extends Logging {
 
     info(s" load file:${sourceFile}")
 
-    val inputStream = new FileInputStream(s"$path//${sourceFile.fileName}")
+    val inputStream = new FileInputStream(s"${sourceFile.path}//${sourceFile.fileName}")
 
     val reader = new DBFReader(inputStream)
     reader.setCharactersetName("Cp866")
@@ -65,18 +67,21 @@ object LoadUtl extends Logging {
     val maxId = if (existsId) jdbcUtl.getMaxId(sqlForMaxId) else 0
     val sqlInsert = SQLBulder.generateSqlInsert(sourceFile.tableName, fields, existsId)
 
-    val records = DataReader.getRecords(reader).grouped(10000).
+
+    val records = DataReader.getRecords(reader).grouped(500000).
       map((records) => transfrom(sourceFile,records,existsId,maxId)).
       foldLeft(true)((first,records) => jdbcUtl.loadToDB(records, sqlInsert, sourceFile.tableName, sourceFile.codeBase, first))
 
-      inputStream.close()
-
-
+    inputStream.close()
   }
 
   def loadOneEntity(entityName: String, sourceFiles: List[SourceFile]): Unit = {
     val sqlForMaxId = SQLBulder.generateSelectMax(sourceFiles.map(_.tableName).distinct)
     sourceFiles.foreach((s) => loadOneSourceFile(s, sqlForMaxId))
+  }
+
+  def truncateAll(mapFiles: Map[String, List[SourceFile]]) = {
+    mapFiles.toList.map(_._2).flatten.map(_.tableName).distinct.foreach(jdbcUtl.truncateTable(_))
   }
 
   def loadAll(mapFiles: Map[String, List[SourceFile]]) = {
